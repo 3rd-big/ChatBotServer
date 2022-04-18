@@ -1,0 +1,11 @@
+[36m2022/04/18 16:24:57,260[m [32m[INFO ][m  [server.Test] [33m[main][m- info
+ -[36m2022/04/18 16:24:57,263[m [33m[WARN ][m  [server.Test] [33m[main][m- warn
+ -[36m2022/04/18 16:24:57,263[m [31m[ERROR][m  [server.Test] [33m[main][m- error
+ -[36m2022/04/18 16:28:36,401[m [32m[INFO ][m  [server.Main] [33m[main][m- port = 9090
+ -[36m2022/04/18 16:30:31,515[m [32m[INFO ][m  [server.Main] [33m[main][m- port = 9090
+ -[36m2022/04/18 16:30:31,517[m [31m[ERROR][m  [server.Main] [33m[main][m- port = 9090
+ -[36m2022/04/18 16:30:31,517[m [41m[FATAL][m  [server.Main] [33m[main][m- port = 9090
+ -[36m2022/04/18 16:30:31,517[m [33m[WARN ][m  [server.Main] [33m[main][m- port = 9090
+ -[36m2022/04/18 16:32:21,237[m [31m[ERROR][m  [server.Main] [33m[main][m- Usage: java -jar ChatBotServer.jar [port]
+ -[36m2022/04/18 16:34:23,185[m [31m[ERROR][m  [server.Main] [33m[main][m- Usage: java -jar ChatBotServer.jar [port]
+ -
