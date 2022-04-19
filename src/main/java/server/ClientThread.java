@@ -90,6 +90,8 @@ public class ClientThread extends Thread {
                     // 잘못 입력되면 식당목록으로 돌아감
                     errorCheck = service.getErrorCheck();
                     if(errorCheck == false) {
+                        pw.println(reservartion);
+                        pw.flush();
                         continue;
                     }
 
@@ -97,11 +99,6 @@ public class ClientThread extends Thread {
                     br.readLine();
                     pw.flush();
 
-                    // 잘못 입력되면 식당목록으로 돌아감
-                    errorCheck = service.getErrorCheck();
-                    if(errorCheck == false) {
-                        continue;
-                    }
 
                     String storeName = service.getStoreName();
                     String reservationDate = service.getReservationDate();
