@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Login {
     List<Member> memberList = new ArrayList<>();
@@ -58,6 +59,10 @@ public class Login {
     }
 
     private boolean idCheck(PrintWriter pw, String id) {
+        if(idValidationCheck(id)) {
+            pw.append(id).append("숫자와 영어만 입력해주세요. ");
+            return false;
+        }
         for (Member member : memberList
         ) {
             if (!member.duplicationCheck(id)) {
@@ -69,6 +74,7 @@ public class Login {
         return true;
     }
     private Boolean login(PrintWriter pw, String id, String password) {
+
         for (Member member : memberList
         ) {
             if (member.getId().equals(id)) {
@@ -100,5 +106,9 @@ public class Login {
         MemberReadFile file = new MemberReadFile();
         file.ReadTextFile();
         memberList = file.saveData();
+    }
+    private boolean idValidationCheck(String id) {
+        return Pattern.matches("[ㄱ-ㅎ가-힣 !@#$%^&*(),.?\\\":{}|<>]", id);
+
     }
 }
