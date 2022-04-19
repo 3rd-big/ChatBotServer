@@ -59,8 +59,8 @@ public class Login {
     }
 
     private boolean idCheck(PrintWriter pw, String id) {
-        if(idValidationCheck(id)) {
-            pw.append(id).append("숫자와 영어만 입력해주세요. ");
+        if(!idValidationCheck(id)) {
+            pw.append("숫자와 영어만 입력해주세요. ");
             return false;
         }
         for (Member member : memberList
@@ -108,7 +108,7 @@ public class Login {
         memberList = file.saveData();
     }
     private boolean idValidationCheck(String id) {
-        return Pattern.matches("[ㄱ-ㅎ가-힣 !@#$%^&*(),.?\\\":{}|<>]", id);
+        return Pattern.matches("^[A-Za-z0-9]*$", id);
 
     }
 }
