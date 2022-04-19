@@ -4,6 +4,7 @@ import domain.Member.Member;
 import domain.sms.ReservationInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import service.Member.Login;
 import service.Member.MemberReadFile;
 import service.Member.MemberWriteFile;
 import service.Reservation.ReservationService;
@@ -38,52 +39,17 @@ public class ClientThread extends Thread {
             String line = "";
 
 
-            LoadingLoginFile();
+            Login login = new Login();
+            login.LoadingLoginFile();
 
             pw.println("로그인은1번, 회원가입은 2번");
             pw.flush();
-            String str = SelectLoginOrJoin(pw, br, br.readLine());
+            String str = login.SelectLoginOrJoin(pw, br, br.readLine());
 
-            while (true) {
-                //// start
 
                 while (true) {
-                    String id;
-                    if (str.equals("1")) {
-                        String password;
-                        do {
-                            pw.println("아이디를 입력해주세요.");
-                            pw.flush();
-                            id = br.readLine();
-                            pw.println("비밀번호를 입력해주세요.");
-                            pw.flush();
-                            password = br.readLine();
 
-                        } while (!login(pw, id, password));
-                        break;
-                    }
-                    if (str.equals("2")) {
-                        do {
-                            pw.println("회원가입할 아이디를 입력");
-                            pw.flush();
-                            id = br.readLine();
-                        } while (!idCheck(pw, id));
-                        pw.println("비밀번호 입력");
-                        pw.flush();
-                        String password = br.readLine();
-                        pw.println("이름 입력");
-                        pw.flush();
-                        String name = br.readLine();
-                        pw.println("전화번호 입력");
-                        pw.flush();
-                        String mobileNumber = br.readLine();
-                        memberList.add(Member.joinMember(id, password, name, mobileNumber));
-                        member = memberList.get(memberList.size() - 1);
-                        pw.println("회원가입완료");
-                        pw.flush();
-                        MemberWriteFile.memberAddFile(member);
-                        break;
-                    }
+                    if (login.loginService(pw, br, str)) break;
 
                 }//로그인 기능 끝
 
@@ -120,7 +86,15 @@ public class ClientThread extends Thread {
                     String selectPeople = br.readLine();
 
                     String reservartion = service.reservation(selectTime, selectPeople); //
+
+                    // 잘못 입력되면 식당목록으로 돌아감
+                    errorCheck = service.getErrorCheck();
+                    if(errorCheck == false) {
+                        continue;
+                    }
+
                     pw.println(reservartion + "  : 종료 >> enter");
+                    br.readLine();
                     pw.flush();
 
                     // 잘못 입력되면 식당목록으로 돌아감
@@ -138,7 +112,13 @@ public class ClientThread extends Thread {
 
                     Reservation reservation = new Reservation();
                     logger.info("ReservationInfo Object Data: {}", reservationInfo.toString());
-                    int response = reservation.ApiCall(reservationInfo, member);
+                    int response = reservation.ApiCall(reservationInfo, login.getMember());
+
+                    pw.println(member.getMobileNumber() + "번호로 문자 전송이 완료되었습니다. 연결을 종료합니다.");
+                    pw.flush();
+
+                    br.close();
+                    pw.close();
 
 
                     break;
@@ -146,24 +126,18 @@ public class ClientThread extends Thread {
 
 
                 /// end
+//
+//                if ((line = br.readLine()) == null) {
+//                    logger.warn("{} Client Disconnect", inetAddress.getHostAddress());
+////                    break;
+//                }
+//
+//                logger.info("[Server Received] {}", line);
+//                /// TODO Server -> Client 메시지 로거로 찍어놓기
+//                pw.println(line);
+//                pw.flush();
 
-                if ((line = br.readLine()) == null) {
-                    logger.warn("{} Client Disconnect", inetAddress.getHostAddress());
-                    break;
-                }
 
-                logger.info("[Server Received] {}", line);
-                /// TODO Server -> Client 메시지 로거로 찍어놓기
-                pw.println(line);
-                pw.flush();
-
-
-//                ReservationInfo reservationInfo = new ReservationInfo("한돈애", "1123123", 3);
-//                Reservation reservation = new Reservation();
-//                logger.info("ReservationInfo Object Data: {}", reservationInfo.toString());
-//                int response = reservation.ApiCall(reservationInfo);
-
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -183,51 +157,51 @@ public class ClientThread extends Thread {
     }
 
 
-    private void LoadingLoginFile() {
-        MemberReadFile file = new MemberReadFile();
-        file.ReadTextFile();
-        memberList = file.saveData();
-    }
-
-    private String SelectLoginOrJoin(PrintWriter pw, BufferedReader br, String str) throws IOException {
-        while (true) {
-            if (str.equals("1") || str.equals("2")) return str;
-            pw.println("로그인은1번, 회원가입은 2번");
-            pw.flush();
-            str = br.readLine();
-        }
-    }
-
-    private Boolean login(PrintWriter pw, String id, String password) {
-        for (Member member : memberList
-        ) {
-            if (member.getId().equals(id)) {
-                if (member.getPassword().equals(password)) {
-                    this.member = member;
-                    pw.println(id + " 로그인 성공 >> enter");
-                    pw.flush();
-                    return true;
-                }
-                pw.append("비밀번호 잘못 입력 ");
-
-                return false;
-            }
-        }
-        pw.append("존재하지 않는 아이디 입니다. ");
-        pw.flush();
-        return false;
-    }
-
-    private boolean idCheck(PrintWriter pw, String id) {
-        for (Member member : memberList
-        ) {
-            if (!member.duplicationCheck(id)) {
-                pw.append(id).append(" 는 이미 존재하는 ID 입니다.  ");
-                return false;
-            }
-        }
-        pw.append(id).append(" 는 사용 가능한 ID 입니다.  ");
-        return true;
-    }
+//    private void LoadingLoginFile() {
+//        MemberReadFile file = new MemberReadFile();
+//        file.ReadTextFile();
+//        memberList = file.saveData();
+//    }
+//
+//    private String SelectLoginOrJoin(PrintWriter pw, BufferedReader br, String str) throws IOException {
+//        while (true) {
+//            if (str.equals("1") || str.equals("2")) return str;
+//            pw.println("로그인은1번, 회원가입은 2번");
+//            pw.flush();
+//            str = br.readLine();
+//        }
+//    }
+//
+//    private Boolean login(PrintWriter pw, String id, String password) {
+//        for (Member member : memberList
+//        ) {
+//            if (member.getId().equals(id)) {
+//                if (member.getPassword().equals(password)) {
+//                    this.member = member;
+//                    pw.println(id + " 로그인 성공 >> enter");
+//                    pw.flush();
+//                    return true;
+//                }
+//                pw.append("비밀번호 잘못 입력 ");
+//
+//                return false;
+//            }
+//        }
+//        pw.append("존재하지 않는 아이디 입니다. ");
+//        pw.flush();
+//        return false;
+//    }
+//
+//    private boolean idCheck(PrintWriter pw, String id) {
+//        for (Member member : memberList
+//        ) {
+//            if (!member.duplicationCheck(id)) {
+//                pw.append(id).append(" 는 이미 존재하는 ID 입니다.  ");
+//                return false;
+//            }
+//        }
+//        pw.append(id).append(" 는 사용 가능한 ID 입니다.  ");
+//        return true;
+//    }
 
 }
