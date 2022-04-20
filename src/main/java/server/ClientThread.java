@@ -1,7 +1,6 @@
 package server;
 
 import common.InputMessage;
-import domain.Member.Member;
 import domain.sms.ReservationInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -86,7 +85,7 @@ public class ClientThread extends Thread {
                     InputMessage.input(pw);
                     String selectTime = br.readLine();
                     logger.info("[Client Send] {}시 예약 선택", selectTime);
-                    String errorTime = service.reservaetionTime(selectTime);
+                    String errorTime = service.reservationTime(selectTime);
                     errorCheck = service.getErrorCheck();
                     if (errorCheck == false) {
                         pw.println(errorTime);
@@ -110,7 +109,14 @@ public class ClientThread extends Thread {
 
                     //예약 인원 및 인원 등록
                     String reservationResult = service.reservation(selectTime, selectPeople);
+                    errorCheck = service.getErrorCheck();
+                    if (errorCheck == false) {
+                        pw.println(reservationResult);
+                        pw.flush();
+                        continue;
+                    }
                     logger.info("[Server Send] {}",reservationResult);
+
 
 //                    pw.println(reservationResult + "  : 종료 >> enter");
                     pw.println(reservationResult);

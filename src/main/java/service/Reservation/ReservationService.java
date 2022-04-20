@@ -22,7 +22,7 @@ public class ReservationService {
 
         //null값 들어오는경우 에러 방지
         if(selectStore.equals("")) {
-            ment = "입력되지 않았습니다. 목록 이동 >> enter";
+            ment = "입력되지 않았습니다.";
             errorCheck = false;
             return ment;
         }
@@ -40,7 +40,7 @@ public class ReservationService {
         }else if(charInput == '5') {
             storeName = "숯부래";
         }else {
-            ment = "다시 입력해주세요. 목록 이동 >> enter";
+            ment = "다시 입력해주세요.";
             errorCheck = false;
             return ment;
         }
@@ -54,12 +54,12 @@ public class ReservationService {
     }
 
     //2.예약시간 오류 처리
-    public String reservaetionTime(String selectTime) {
+    public String reservationTime(String selectTime) {
         errorCheck = true;
         String ment;
         //널포인트 들어오는 오류
         if(selectTime.equals("")) {
-            ment = "입력되지 않았습니다. 목록 이동 >> enter";
+            ment = "입력되지 않았습니다.";
             errorCheck = false;
             return ment;
         }
@@ -68,7 +68,7 @@ public class ReservationService {
         String reSelectTime = selectTime.replaceAll("[^0-9]", "")+"시"; //시간이 아닌 문자가 들어오면 삭제
         String strError = selectTime.replaceAll("[^0-9]", "");
         if(strError.equals(selectTime) == false) {
-            ment = "문자입력 오류가 발생했습니다. 목록 이동 >> enter";
+            ment = "문자입력 오류가 발생했습니다.";
             errorCheck = false;
             return ment;
         }
@@ -76,7 +76,7 @@ public class ReservationService {
         //없는 시간 들어오는 오류
         if(mapScheduleAll.containsKey(reSelectTime) == false) {
             errorCheck = false;
-            ment = "예약가능 한 시간이 아닙니다. 목록 이동 >> enter";
+            ment = "예약가능 한 시간이 아닙니다.";
             return ment;
         }
 
@@ -103,13 +103,13 @@ public class ReservationService {
 
         //숫자만 입력되지 않은경우
         if(reSelectPeople.equals(selectPeople) == false) {
-            ment = "문자입력 오류가 발생했습니다. 목록 이동 >> enter";
+            ment = "문자입력 오류가 발생했습니다.";
             errorCheck = false;
             return ment;
         }
         //예약가능 인원 초과 시
         if(intNewPeople<0) {
-            ment = "예약가능 인원 범위 초과 오류가 발생했습니다.  목록 이동 >> enter";
+            ment = "예약가능 인원 범위 초과 오류가 발생했습니다.";
             errorCheck = false;
             return ment;
         }
@@ -120,18 +120,25 @@ public class ReservationService {
 
 
     //4.예약 내역 등록
-    public String reservation(String selectTime, String selectPeople) throws IOException {
+    public synchronized String reservation(String selectTime, String selectPeople) throws IOException {
 
         String ment;
-        errorCheck = true;
 
+        //동시접속에 따른 오류 해결
+        mapScheduleAll = reservationDAO.readScheduleAll(storeName);
+        String errorTime = this.reservationTime(selectTime);
+        if(errorCheck == false) return errorTime;
+        String errorPeople = this.reservationPeople(selectTime, selectPeople);
+        if(errorCheck == false) return errorPeople;
+
+        //DAO로 예약 등록을 위한 데이터 전처리
         String reSelectTime = selectTime.replaceAll("[^0-9]", "")+"시"; //시간이 아닌 문자가 들어오면 삭제
         String reSelectPeople = selectPeople.replaceAll("[^0-9]", ""); //인원수가 아닌 문자가 들어오면 삭제
         int intreSelectPeople = Integer.parseInt(reSelectPeople); //올바른 인원수인지 판단하기 위해 int 변환
 
-        String rePviPeople = mapScheduleAll.get(reSelectTime).replaceAll("[^0-9]", "");
-        int intPviPeople = Integer.parseInt(rePviPeople);
-        int intNewPeople = intPviPeople - intreSelectPeople;
+        String rePviPeople = mapScheduleAll.get(reSelectTime).replaceAll("[^0-9]", "");//예약 전 인원수 String
+        int intPviPeople = Integer.parseInt(rePviPeople);//예약 전 인원수 integer
+        int intNewPeople = intPviPeople - intreSelectPeople;//예약 후 인원수 integer
 
         //DAO로 예약 내역 처리
         String strNewPeople = Integer.toString(intNewPeople)+"명"; //map 에 넣기 위한 String 처리
@@ -146,13 +153,12 @@ public class ReservationService {
         String formatedNow = formatter.format(now);
         String reservationDateStr = formatedNow + reSelectTime; //yyyy년MM월dd일HH시
 
+        //예약정보 문자발송을 위한 정보 set
         this.setReservationDate(reservationDateStr);
         this.setNumberPeople(intreSelectPeople);
 
         return ment;
 
-        //이름,전화번호 들어있는 예약정보 DTO에 식당이름, 예약시간, 인원수 SET
-        //예약정보 DTO 객체 문자발송 로직으로 반환
     }
 
     public boolean getErrorCheck() {
