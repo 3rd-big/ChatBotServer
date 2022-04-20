@@ -1,6 +1,10 @@
 package service.Member;
 
+import common.InputMessage;
 import domain.Member.Member;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import service.sms.Reservation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +17,8 @@ public class Login {
     List<Member> memberList = new ArrayList<>();
     private Member member;
 
+    private static final Logger logger = LogManager.getLogger(Login.class);
+
     public final boolean loginService(PrintWriter pw, BufferedReader br, String str) throws IOException {
 
         String id;
@@ -21,11 +27,14 @@ public class Login {
             do {
                 pw.println("아이디를 입력해주세요.");
                 pw.flush();
+                InputMessage.input(pw);
                 id = br.readLine();
+                logger.info("[Client Send] {}", id);
                 pw.println("비밀번호를 입력해주세요.");
                 pw.flush();
+                InputMessage.input(pw);
                 password = br.readLine();
-
+                logger.info("[Client Send] {}", password);
             } while (!login(pw, id, password));
             return true;
         }
@@ -33,21 +42,26 @@ public class Login {
             do {
                 pw.println("회원가입할 아이디를 입력");
                 pw.flush();
+                InputMessage.input(pw);
                 id = br.readLine();
             } while (!idCheck(pw, id));
             pw.println("비밀번호 입력");
             pw.flush();
+            InputMessage.input(pw);
             String password = br.readLine();
             pw.println("이름 입력");
             pw.flush();
+            InputMessage.input(pw);
             String name = br.readLine();
             pw.println("전화번호 입력");
             pw.flush();
+            InputMessage.input(pw);
             String mobileNumber = br.readLine();
             memberList.add(Member.joinMember(id, password, name, mobileNumber));
             member = memberList.get(memberList.size() - 1);
             pw.println("회원가입완료");
             pw.flush();
+            InputMessage.input(pw);
             MemberWriteFile.memberAddFile(member);
             return true;
         }
@@ -80,8 +94,9 @@ public class Login {
             if (member.getId().equals(id)) {
                 if (member.getPassword().equals(password)) {
                     this.member = member;
-                    pw.println(id + " 로그인 성공 >> enter");
+                    pw.println(id + " 로그인 성공");
                     pw.flush();
+                    logger.info("{} login", id);
                     return true;
                 }
                 pw.append("비밀번호 잘못 입력 ");
@@ -98,6 +113,7 @@ public class Login {
             if (str.equals("1") || str.equals("2")) return str;
             pw.println("로그인은1번, 회원가입은 2번");
             pw.flush();
+            InputMessage.input(pw);
             str = br.readLine();
         }
     }

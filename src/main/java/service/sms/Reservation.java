@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import server.Main;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -57,7 +56,7 @@ public class Reservation {
                 .append("\n예약인원: ").append(reservationInfo.getNumberPeople())
                 .toString();
 
-        logger.info("문자 길이: {}", content.length());
+//        logger.info("문자 길이: {}", content.length());
 
         toJson.put("subject", "");                // 메시지 제목 * LMS Type에서만 사용할 수 있습니다.
         toJson.put("content", content);                // 메시지 내용 * Type별로 최대 byte 제한이 다릅니다.* SMS: 80byte / LMS: 2000byte
@@ -121,7 +120,8 @@ public class Reservation {
             logger.info("HTTP Response Data: {}", response.toString());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
+//            e.printStackTrace();
         }
 
         return responseCode;
