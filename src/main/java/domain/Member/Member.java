@@ -36,7 +36,7 @@ public class Member {
         return id;
     }
 
-        public boolean duplicationCheck(String id) {
+        public boolean checkDuplication(String id) {
         if (this.id.equals(id)) return false;
         return true;
     }

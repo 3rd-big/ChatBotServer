@@ -33,17 +33,17 @@ public class ClientThread extends Thread {
             inetAddress = socket.getInetAddress();
 
 
-            Login login = new Login();
+            Login login = new Login(pw,br);
             login.LoadingLoginFile();
 
             pw.println("로그인은1번, 회원가입은 2번");
             pw.flush();
             InputMessage.input(pw);
-            String str = login.SelectLoginOrJoin(pw, br, br.readLine());
+            String str = login.selectLoginOrJoin(br.readLine());
 
 
                 while (true) {
-                    if (login.loginService(pw, br, str)) {
+                    if (login.serviceLogin(str)) {
                         break;
                     }
                 }//로그인 기능 종료
