@@ -15,6 +15,7 @@ public class ReservationDAO {
         private LinkedHashMap<String, String> mapScheduleAll;
 //        private String path = ReservationDAO.class.getResource("").getPath(); //현재클래스의 절대경로
         private String path = "/Users/seotaesu/projects/ChatBotServer/src/main/java/service/Reservation/";
+//        private String path = "";
         private String storeName;
 
 

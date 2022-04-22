@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.hecto'
-version = '1.0-SNAPSHOT'
+version = ''
 sourceCompatibility = '11'
 
 repositories {
@@ -13,14 +13,17 @@ repositories {
 dependencies {
 
     // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
-    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+//    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 
 
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+//    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
 
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
+//    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
 
 
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl
@@ -33,12 +36,13 @@ dependencies {
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.1.0'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
 
 jar {
     manifest {
         attributes 'Main-Class': 'server.Main'
     }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }

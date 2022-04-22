@@ -3,6 +3,9 @@ package service.Member;
 import common.InputMessage;
 import domain.Member.Member;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +18,8 @@ public class Login {
     private Member member;
     BufferedReader br;
     PrintWriter pw;
+
+    private static final Logger logger = LogManager.getLogger(Login.class);
 
     public Login(PrintWriter pw, BufferedReader br) {
         this.br = br;
@@ -36,16 +41,19 @@ public class Login {
             pw.flush();
             InputMessage.input(pw);
             id = br.readLine();
+            logger.info("[Client Send] Id: {}", id);
         } while (!checkId(id));
         pw.println("비밀번호 입력");
         pw.flush();
         InputMessage.input(pw);
         String password = br.readLine();
+        logger.info("[Client Send] Password: {}", password);
         do {
             pw.println("이름 입력");
             pw.flush();
             InputMessage.input(pw);
             name = br.readLine();
+            logger.info("[Client Send] Name: {}", name);
 
         } while (!checkNameValidation(name));
         do {
@@ -53,6 +61,7 @@ public class Login {
             pw.flush();
             InputMessage.input(pw);
             mobileNumber = br.readLine();
+            logger.info("[Client Send] MobileNumber: {}", mobileNumber);
         } while (!checkNumberValidation(mobileNumber));
 
         memberList.add(Member.joinMember(id, password, name, mobileNumber));
@@ -73,10 +82,12 @@ public class Login {
             pw.flush();
             InputMessage.input(pw);
             id = br.readLine();
+            logger.info("[Client Send] Id: {}", id);
             pw.println("비밀번호를 입력해주세요.");
             pw.flush();
             InputMessage.input(pw);
             password = br.readLine();
+            logger.info("[Client Send] Password: {}", password);
 
         } while (!loginMember(id, password));
         return true;
@@ -129,9 +140,9 @@ public class Login {
             if (member.getId().equals(id)) {
                 if (member.getPassword().equals(password)) {
                     this.member = member;
-                    pw.println(id + " 로그인 성공 >> enter");
+                    pw.println(id + " 로그인 성공");
                     pw.flush();
-                    InputMessage.input(pw);
+                    logger.info("{} 로그인 성공", id);
                     return true;
                 }
                 pw.println("비밀번호 잘못 입력 ");

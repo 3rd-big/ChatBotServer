@@ -36,7 +36,7 @@ public class ClientThread extends Thread {
             Login login = new Login(pw,br);
             login.LoadingLoginFile();
 
-            pw.println("로그인은1번, 회원가입은 2번");
+            pw.println("로그인은 1번, 회원가입은 2번");
             pw.flush();
             InputMessage.input(pw);
             String str = login.selectLoginOrJoin(br.readLine());
@@ -74,10 +74,8 @@ public class ClientThread extends Thread {
                         continue;
                     }
 
-//                    pw.println(scheduleAll + "  : 예약진행 >> enter");
                     pw.println(scheduleAll);
                     pw.flush();
-//                    br.readLine();
 
                     //예약 시간 입력 및 예외처리
                     pw.println("예약 [시간] 입력(숫자만 입력)");
@@ -115,13 +113,6 @@ public class ClientThread extends Thread {
                         pw.flush();
                         continue;
                     }
-                    logger.info("[Server Send] {}",reservationResult);
-
-
-//                    pw.println(reservationResult + "  : 종료 >> enter");
-                    pw.println(reservationResult);
-//                    pw.flush();
-//                    br.readLine();
 
                     String storeName = service.getStoreName();
                     String reservationDate = service.getReservationDate();
@@ -138,6 +129,8 @@ public class ClientThread extends Thread {
                         pw.println("예약이 완료되지 않았습니다. 관리자에게 문의바랍니다.");
                         pw.flush();
                     } else {
+                        logger.info("[Server Send] {}",reservationResult);
+                        pw.println(reservationResult);
                         pw.println(login.getMember().getName() + "님 [" + login.getMember().getMobileNumber() + "] 번호로 문자 전송이 완료되었습니다.");
                         pw.flush();
                     }
@@ -159,6 +152,7 @@ public class ClientThread extends Thread {
     }
 
     public PrintWriter makeOutboundStream(Socket socket) throws IOException {
+        String str = "가나다";
         OutputStream out = socket.getOutputStream();
         OutputStreamWriter outW = new OutputStreamWriter(out);
         return new PrintWriter(outW);

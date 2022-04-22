@@ -4,7 +4,7 @@
     <Properties>
         <Property name="logNm">ChatBotServer</Property>
         <Property name="layoutPattern">%style{%d{yyyy/MM/dd HH:mm:ss,SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red, ERROR=red,
-            INFO=green, DEBUG=blue}  [%30C] %style{[%9t]}{yellow}- %m%n</Property>
+            INFO=green, DEBUG=blue}  [%24C] %style{[%9t]}{yellow}- %m%n</Property>
     </Properties>
     <!--    LogEvent를 전달해주는 Appender-->
     <Appenders>
